@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login with Google</title>
+    <!-- Include Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+</head>
+<body>
+    <button id="googleLogin" style="display: none;">Sign in with Google</button>
+
+    <script>
+        // Your Firebase configuration (replace with your config)
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+
+        // Handle login button
+        document.getElementById('googleLogin').addEventListener('click', () => {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            firebase.auth().signInWithPopup(provider).catch((error) => {
+                console.error("Sign-in error:", error);
+            });
+        });
+
+        // Auth state listener
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // Check if user is new
+                const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
+                
+                // Redirect based on user status
+                if (isNewUser) {
+                    window.location.href = 'profile.html';
+                } else {
+                    window.location.href = 'main.html';
+                }
+            } else {
+                // Show login button if not logged in
+                document.getElementById('googleLogin').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
