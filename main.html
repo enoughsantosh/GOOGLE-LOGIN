@@ -30,7 +30,17 @@
                     <span class="ml-2 text-lg font-semibold text-gray-900">Dashboard</span>
                 </div>
                 
-                <div class="flex items-center space-x-4">
+                <!-- Mobile Menu Button -->
+                <div class="flex items-center md:hidden">
+                    <button id="mobileMenuButton" class="text-gray-500 hover:text-gray-700 focus:outline-none">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path>
+                        </svg>
+                    </button>
+                </div>
+
+                <!-- Desktop Menu -->
+                <div class="hidden md:flex items-center space-x-4">
                     <div class="flex items-center space-x-3">
                         <img id="userPhoto" class="w-8 h-8 rounded-full" src="" alt="Profile">
                         <span id="userName" class="text-sm font-medium text-gray-700"></span>
@@ -41,6 +51,21 @@
                 </div>
             </div>
         </div>
+
+        <!-- Mobile Menu -->
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-4 py-3">
+                <div class="flex items-center space-x-3">
+                    <img id="mobileUserPhoto" class="w-8 h-8 rounded-full" src="" alt="Profile">
+                    <span id="mobileUserName" class="text-sm font-medium text-gray-700"></span>
+                </div>
+            </div>
+            <div class="px-4 py-3 space-y-2">
+                <button id="mobileLogoutBtn" class="w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200">
+                    Sign Out
+                </button>
+            </div>
+        </div>
     </nav>
 
     <!-- Main Content -->
@@ -48,6 +73,22 @@
         <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
             <h2 class="text-lg font-semibold text-gray-900 mb-4">Welcome to your Dashboard</h2>
             <p class="text-gray-600">You've successfully signed in. This is your personalized dashboard.</p>
+        </div>
+
+        <!-- Additional Options -->
+        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Settings</h3>
+                <p class="text-gray-600">Manage your account settings and preferences.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Notifications</h3>
+                <p class="text-gray-600">View and manage your notifications.</p>
+            </div>
+            <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Search</h3>
+                <p class="text-gray-600">Search for content across your dashboard.</p>
+            </div>
         </div>
     </main>
 
@@ -68,6 +109,8 @@
                 // Update UI with user info
                 document.getElementById('userPhoto').src = user.photoURL || 'https://via.placeholder.com/32';
                 document.getElementById('userName').textContent = user.displayName;
+                document.getElementById('mobileUserPhoto').src = user.photoURL || 'https://via.placeholder.com/32';
+                document.getElementById('mobileUserName').textContent = user.displayName;
             } else {
                 // Redirect to login if not authenticated
                 window.location.href = 'index.html';
@@ -80,6 +123,20 @@
             }).catch((error) => {
                 console.error("Sign-out error:", error);
             });
+        });
+
+        document.getElementById('mobileLogoutBtn').addEventListener('click', () => {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Sign-out error:", error);
+            });
+        });
+
+        // Mobile Menu Toggle
+        document.getElementById('mobileMenuButton').addEventListener('click', () => {
+            const mobileMenu = document.getElementById('mobileMenu');
+            mobileMenu.classList.toggle('hidden');
         });
     </script>
 </body>
