@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <style>
+        .fade-in {
+            animation: fadeIn 0.5s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- Navigation -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-16">
+                <div class="flex items-center">
+                    <svg class="w-8 h-8 text-blue-600" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                        <path d="M15 12L12 12M12 12L9 12M12 12L12 9M12 12L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span class="ml-2 text-lg font-semibold text-gray-900">Dashboard</span>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center space-x-3">
+                        <img id="userPhoto" class="w-8 h-8 rounded-full" src="" alt="Profile">
+                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                    </div>
+                    <button id="logoutBtn" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200">
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="bg-white rounded-xl shadow-sm p-6 fade-in">
+            <h2 class="text-lg font-semibold text-gray-900 mb-4">Welcome to your Dashboard</h2>
+            <p class="text-gray-600">You've successfully signed in. This is your personalized dashboard.</p>
+        </div>
+    </main>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyDLW0P7Op6coJkNzJj0ck9pLNdneJplcbI",
+            authDomain: "love-6996.firebaseapp.com",
+            projectId: "love-6996",
+            storageBucket: "love-6996.appspot.com",
+            messagingSenderId: "1050433920317",
+            appId: "1:1050433920317:web:99246747017f6bdca1b954",
+            measurementId: "G-EKDTE6WQY1"
+        };
+        firebase.initializeApp(firebaseConfig);
+
+        firebase.auth().onAuthStateChanged((user) => {
+            if (user) {
+                // Update UI with user info
+                document.getElementById('userPhoto').src = user.photoURL || 'https://via.placeholder.com/32';
+                document.getElementById('userName').textContent = user.displayName;
+            } else {
+                // Redirect to login if not authenticated
+                window.location.href = 'index.html';
+            }
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', () => {
+            firebase.auth().signOut().then(() => {
+                window.location.href = 'index.html';
+            }).catch((error) => {
+                console.error("Sign-out error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
