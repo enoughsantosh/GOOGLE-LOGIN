@@ -111,34 +111,45 @@
         });
 
         function loadUserData(userId) {
-            const dataList = document.getElementById('dataList');
-            dataList.innerHTML = "<p>Loading...</p>";
+    const dataList = document.getElementById('dataList');
+    dataList.innerHTML = "<p>Loading...</p>";
 
-            db.collection("user_data").where("userId", "==", userId)
-                .orderBy("timestamp", "desc")
-                .get()
-                .then(snapshot => {
-                    dataList.innerHTML = "";
-                    if (snapshot.empty) {
-                        dataList.innerHTML = "<p>No data found.</p>";
-                        return;
-                    }
-                    snapshot.forEach(doc => {
-                        const data = doc.data();
-                        const itemDiv = document.createElement("div");
-                        itemDiv.className = "p-4 border border-gray-300 rounded";
+    const userCollection = db.collection("user_data").where("userId", "==", userId);
+    
+    userCollection.get().then(snapshot => {
+        if (snapshot.empty) {
+            dataList.innerHTML = "<p>No data found.</p>";
+            return;
+        }
 
-                        itemDiv.innerHTML = `
-                            <p><strong>Key:</strong> ${data.key}</p>
-                            <p><strong>Data:</strong> ${data.value}</p>
-                        `;
-                        dataList.appendChild(itemDiv);
-                    });
-                })
-                .catch(error => {
-                    console.error("Error loading data:", error);
-                    dataList.innerHTML = "<p>Error loading data.</p>";
-                });
+        // Check if timestamp field exists in at least one document
+        let hasTimestamp = snapshot.docs.some(doc => doc.data().timestamp);
+
+        // Fetch data with or without ordering
+        let query = hasTimestamp ? userCollection.orderBy("timestamp", "desc") : userCollection;
+
+        query.get().then(orderedSnapshot => {
+            dataList.innerHTML = "";
+            orderedSnapshot.forEach(doc => {
+                const data = doc.data();
+                const itemDiv = document.createElement("div");
+                itemDiv.className = "p-4 border border-gray-300 rounded";
+
+                itemDiv.innerHTML = `
+                    <p><strong>Key:</strong> ${data.key}</p>
+                    <p><strong>Data:</strong> ${data.value}</p>
+                `;
+                dataList.appendChild(itemDiv);
+            });
+        }).catch(error => {
+            console.error("Error loading data:", error);
+            dataList.innerHTML = "<p>Error loading data.</p>";
+        });
+
+    }).catch(error => {
+        console.error("Error fetching data:", error);
+        dataList.innerHTML = "<p>Error loading data.</p>";
+    });
         }
     </script>
 </body>
