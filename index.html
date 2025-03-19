@@ -93,7 +93,7 @@
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 const isNewUser = user.metadata.creationTime === user.metadata.lastSignInTime;
-                window.location.href = isNewUser ? 'profile.html' : 'main.html';
+                window.location.href = isNewUser ? 'main.html';
             }
         });
     </script>
