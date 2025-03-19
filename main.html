@@ -21,10 +21,10 @@
                 <div class="flex items-center">
                     <span class="ml-2 text-lg font-semibold text-gray-900">Dashboard</span>
                 </div>
-                <div class="hidden md:flex items-center space-x-4">
+                <div id="userSection" class="hidden md:flex items-center space-x-4">
                     <div class="flex items-center space-x-3">
-                        <img id="userPhoto" class="w-8 h-8 rounded-full" src="" alt="Profile">
-                        <span id="userName" class="text-sm font-medium text-gray-700"></span>
+                        <img id="userPhoto" class="w-8 h-8 rounded-full" src="https://via.placeholder.com/32" alt="Profile">
+                        <span id="userName" class="text-sm font-medium text-gray-700">User</span>
                     </div>
                     <button id="logoutBtn" class="px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded-lg transition duration-200">
                         Sign Out
@@ -51,7 +51,7 @@
 
         <h2 class="text-xl font-bold mt-8 mb-4">Uploaded Data</h2>
         <div id="dataList" class="bg-white p-6 rounded-lg shadow-md space-y-2">
-            <!-- Uploaded data will appear here -->
+            <p>Loading...</p>
         </div>
     </main>
 
@@ -71,7 +71,8 @@
         firebase.auth().onAuthStateChanged((user) => {
             if (user) {
                 document.getElementById('userPhoto').src = user.photoURL || 'https://via.placeholder.com/32';
-                document.getElementById('userName').textContent = user.displayName;
+                document.getElementById('userName').textContent = user.displayName || "User";
+                document.getElementById('userSection').classList.remove('hidden');
                 loadUserData(user.uid);
             } else {
                 window.location.href = 'index.html';
@@ -96,7 +97,7 @@
                 return;
             }
 
-            db.collection("user_data").doc(`${user.uid}_${dataKey}`).set({
+            db.collection("user_data").add({
                 userId: user.uid,
                 key: dataKey,
                 value: dataValue,
@@ -113,8 +114,10 @@
             const dataList = document.getElementById('dataList');
             dataList.innerHTML = "<p>Loading...</p>";
 
-            db.collection("user_data").where("userId", "==", userId).orderBy("timestamp", "desc")
-                .get().then(snapshot => {
+            db.collection("user_data").where("userId", "==", userId)
+                .orderBy("timestamp", "desc")
+                .get()
+                .then(snapshot => {
                     dataList.innerHTML = "";
                     if (snapshot.empty) {
                         dataList.innerHTML = "<p>No data found.</p>";
@@ -131,7 +134,11 @@
                         `;
                         dataList.appendChild(itemDiv);
                     });
-                }).catch(error => console.error("Error loading data:", error));
+                })
+                .catch(error => {
+                    console.error("Error loading data:", error);
+                    dataList.innerHTML = "<p>Error loading data.</p>";
+                });
         }
     </script>
 </body>
